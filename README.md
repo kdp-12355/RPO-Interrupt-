@@ -84,3 +84,180 @@ NoCurr 固定等级评估也已完成，成功生成 CSV，且评估规模与 Fu
 NoInt 的中断恢复时间没有可直接对照的数据，因为它没有中断事件。它的低终止率也不能单独说明策略整体更优：它没有承担 Full 和 NoCurr 所承受的中断扰动。
 
 论文中建议的下一步： 对 Full、NoInt、NoCurr 各使用至少 3–5 个随机种子重复评估，报告均值和标准差；同时检查恢复成功率的统计分母，并确保三个模型使用一致的命令速度、地形、仿真时长和中断强度。这样才能更有力地论证课程学习对抗扰恢复能力的贡献。
+
+
+
+
+很好，现在 `interrupt_ablation_table.tex` 已经正确。
+
+检查结果：
+
+✅ 列数一致：
+
+```latex
+\begin{tabular}{lcccccc}
+```
+
+对应：
+
+|列|内容|
+|-|-|
+|1|Method|
+|2|Fall Rate|
+|3|$v_x$ MAE|
+|4|$v_y$ MAE|
+|5|$\omega_z$ MAE|
+|6|Recovery Rate|
+|7|Recovery Time|
+
+三组数据均为 7 项，没有错位。
+
+---
+
+## 下一步 1：编译 PDF
+
+先检查 LaTeX：
+
+```bash
+which pdflatex
+```
+
+如果输出路径，例如：
+
+```text
+/usr/bin/pdflatex
+```
+
+执行：
+
+```bash
+pdflatex interrupt_ablation_table.tex
+```
+
+成功后：
+
+```bash
+ls -lh interrupt_ablation_table.*
+```
+
+应该看到：
+
+```
+interrupt_ablation_table.tex
+interrupt_ablation_table.pdf
+```
+
+---
+
+## 下一步 2：如果没有 pdflatex
+
+如果：
+
+```bash
+which pdflatex
+```
+
+没有输出，不安装也没关系。
+
+目前你已经有：
+
+```
+interrupt_ablation_table.csv
+```
+
+和：
+
+```
+interrupt_ablation_table.tex
+```
+
+论文写作已经够用。
+
+---
+
+## 下一步 3：建议整理论文目录
+
+现在建议整理：
+
+```bash
+cd /workspace/IsaacLab/logs/rsl_rl/interrupt_eval
+
+mkdir -p paper_results
+
+mv interrupt_ablation_table.csv paper_results/
+mv interrupt_ablation_table.tex paper_results/
+
+mv paper_figures paper_results/
+```
+
+最终：
+
+```
+interrupt_eval/
+
+paper_results/
+│
+├── interrupt_ablation_table.csv
+├── interrupt_ablation_table.tex
+│
+└── paper_figures/
+    ├── fall_rate.pdf
+    ├── recovery_rate.pdf
+    └── recovery_time.pdf
+```
+
+这个目录可以直接作为论文实验附件。
+
+---
+
+## 下一步建议：制作 RPO-Interrupt 视频实验
+
+目前定量结果：
+
+- 800 次扰动
+- recovery success 92.02%
+- recovery time 0.369s
+
+已经够表格。
+
+论文还缺：
+
+**定性展示（qualitative result）**
+
+建议做一个 10 秒视频：
+
+流程：
+
+```
+0s-2s:
+normal walking
+
+2s:
+apply arm joint disturbance
+
+2s-3s:
+body deviation
+
+3s-5s:
+recover velocity
+
+5s-10s:
+stable walking
+```
+
+同时记录：
+
+- base height
+- roll/pitch
+- commanded velocity
+- actual velocity
+
+生成一张：
+
+```
+Fig. Disturbance recovery behavior
+```
+
+这会明显增强 RPO-Interrupt 部分。
+
+你现在可以进入 `sim2sim/play` 阶段。
